@@ -32,6 +32,14 @@ const findSeat = seat => {
 };
 
 const foundSeats = seats.map(seat => findSeat(seat))
+	// Sort seatIds in decreasing order
 	.sort((seatOne, seatTwo) => seatTwo.seatId - seatOne.seatId);
 
-console.log(foundSeats[0]);
+// Find the seats which do not have a seatId that is 1 greater, and extract the last result
+// The first result will always be the seat with the highest seatId and can be discarded
+const mySeatId = foundSeats.filter(({ seatId }) => !foundSeats.some(({ seatId: _seatId }) => _seatId === seatId + 1))
+	.pop()
+	// My seatId is 1 greater than the found seatId
+	.seatId + 1;
+
+console.log(mySeatId);
