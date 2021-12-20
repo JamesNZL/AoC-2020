@@ -7,7 +7,8 @@ const fs = require('fs');
  * @returns {string[] | number[]} The read file as an array
  */
 module.exports = (path, type) => {
-	const input = fs.readFileSync(path, { encoding: 'utf-8', flag: 'r' });
+	const input = fs.readFileSync(path, { encoding: 'utf-8', flag: 'r' })
+		.trim();
 
 	return (type === 'STRING')
 		? input.split('\n')
