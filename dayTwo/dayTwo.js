@@ -1,7 +1,7 @@
 const readInput = require('../readInput');
 
 /** @type {string[]} */
-const passwords = readInput('./dayTwo/input.txt', 'STRING');
+const passwords = readInput('dayTwo/', 'STRING');
 
 let count = 0;
 

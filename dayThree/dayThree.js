@@ -3,7 +3,7 @@ const readInput = require('../readInput');
 const [OPEN, TREE] = ['.', '#'];
 
 /** @type {string[]} */
-const map = readInput('./dayThree/input.txt', 'STRING')
+const map = readInput('dayThree/', 'STRING')
 	.map(line => line.split(''));
 
 /**

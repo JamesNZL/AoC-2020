@@ -1,7 +1,7 @@
 const readInput = require('../readInput');
 
 /** @type {['acc' | 'jmp' | 'nop', number][]} */
-const corruptedInstructions = readInput('./dayEight/input.txt', 'STRING')
+const corruptedInstructions = readInput('dayEight/', 'STRING')
 	.map(instruction => instruction.split(' '))
 	.map(([operation, argument]) => [operation, Number(argument)]);
 

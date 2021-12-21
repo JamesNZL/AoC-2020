@@ -1,7 +1,7 @@
 const readInput = require('../readInput');
 
 /** @type {string[]} */
-const groups = readInput('./daySix/input.txt', 'STRING', true);
+const groups = readInput('daySix/', 'STRING', true);
 
 const groupAffirmativeCounts = groups.map(group => {
 	const affirmativeQuestions = new Set();

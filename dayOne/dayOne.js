@@ -1,6 +1,6 @@
 const readInput = require('../readInput');
 
-const entries = readInput('./dayOne/input.txt', 'NUMBER');
+const entries = readInput('dayOne/', 'NUMBER');
 
 // terrible solution but oh well (:
 entries.forEach((entry, index) => {

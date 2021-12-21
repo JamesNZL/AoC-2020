@@ -1,7 +1,7 @@
 const readInput = require('../readInput');
 
 /** @type {string[]} */
-const seats = readInput('./dayFive/input.txt', 'STRING');
+const seats = readInput('dayFive/', 'STRING');
 
 /**
  * Convert a specified binary string into its decimal number representation

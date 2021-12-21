@@ -50,7 +50,7 @@ const FAUX_REQUIRED_FIELDS = Object.fromEntries(
 );
 
 /** @type {string[]} */
-const passports = readInput('./dayFour/input.txt', 'STRING', true)
+const passports = readInput('dayFour/', 'STRING', true)
 	.map(passport => {
 		return Object.fromEntries(
 			passport.replace(/\n/g, ' ')

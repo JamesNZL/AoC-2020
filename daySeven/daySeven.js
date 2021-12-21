@@ -8,7 +8,7 @@ const REGEXES = {
 };
 
 /** @type {string[]} */
-const rules = readInput('./daySeven/input.txt', 'STRING');
+const rules = readInput('daySeven/', 'STRING');
 
 /**
  * Schema: {outerBag: [quantity, innerBagType][]}
