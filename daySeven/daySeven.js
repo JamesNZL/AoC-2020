@@ -23,17 +23,62 @@ const processedRules = Object.fromEntries(rules.map(rule => {
 	return [outerBag[1], innerBags];
 }));
 
-const validOuterBags = new Set();
-let oldSetSize = 0;
+const innerBagRegex = /^(\d+):([\w ]+)$/;
 
-while (validOuterBags.size !== oldSetSize || oldSetSize === 0) {
-	oldSetSize = validOuterBags.size;
+/**
+ * Schema: {outerBag: {nestLevel, innerBagRegex[], numberOfInnerBags}}
+ * @type {Object.<string, {nestLevel: number, innerBags: string[], numberOfInnerBags: number}>}
+ */
+const foundOuterBags = {
+	[MY_BAG]: {
+		nestLevel: 0,
+		innerBags: [],
+		numberOfInnerBags: 0,
+	},
+};
 
-	Object.entries(processedRules).forEach(([outerBag, innerBags]) => {
-		if (validOuterBags.has(outerBag)) return;
+let deepestNestedBags = [MY_BAG];
+let currentNestLevel = 0;
 
-		if (innerBags.some(([_, innerBagType]) => innerBagType === MY_BAG || validOuterBags.has(innerBagType))) validOuterBags.add(outerBag);
+while (!deepestNestedBags.every(outerBag => foundOuterBags[outerBag].innerBags[0] === 'EMPTY')) {
+	const currentLevelBags = Object.entries(foundOuterBags).filter(outerBagEntry => outerBagEntry[1].nestLevel === currentNestLevel);
+
+	currentNestLevel++;
+	deepestNestedBags = [];
+
+	currentLevelBags.forEach(([outerBag, outerBagObject]) => {
+		processedRules[outerBag].forEach(([innerBagQuantity, innerBagType]) => {
+			if (processedRules[outerBag][0][0] === 'no') return;
+
+			outerBagObject.innerBags.push(`${innerBagQuantity}:${innerBagType}`);
+
+			foundOuterBags[innerBagType] = {
+				nestLevel: currentNestLevel,
+				innerBags: (processedRules[innerBagType][0][0] === 'no') ? ['EMPTY'] : [],
+				numberOfInnerBags: 0,
+			};
+
+			deepestNestedBags.push(innerBagType);
+		});
 	});
 }
 
-console.log(validOuterBags.size);
+Object.entries(foundOuterBags)
+	// Sort the found outer bags by nest level in descending order
+	// i.e. the deepest bags are sorted to the left
+	.sort((outerBagEntryOne, outerBagEntryTwo) => outerBagEntryTwo[1].nestLevel - outerBagEntryOne[1].nestLevel)
+	.forEach(([_, outerBagObject]) => {
+		outerBagObject.numberOfInnerBags = Object.entries(foundOuterBags)
+			// Filter for the outer-bag objects of the inner bags, in order to inspect the nested inner-inner bags
+			.filter(outerBagEntry => outerBagObject.innerBags.some(innerBag => innerBag.includes(outerBagEntry[0])))
+			.reduce((count, [innerBagType, innerBagObject]) => {
+				const innerBagQuantity = Number(outerBagObject.innerBags
+					.find(innerBag => innerBag.includes(innerBagType))
+					.match(innerBagRegex)[1]);
+
+				return count + innerBagQuantity + (innerBagQuantity * innerBagObject.numberOfInnerBags);
+			}
+			, 0);
+	});
+
+console.log(foundOuterBags[MY_BAG].numberOfInnerBags);
