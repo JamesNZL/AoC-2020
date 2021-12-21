@@ -14,4 +14,23 @@ const invalidNumber = data.find((value, index) => {
 	if (!hasSum) return value;
 });
 
-console.log(invalidNumber);
+/**
+ * Calculate the sum of the values in a \<number[]>
+ * @param {number[]} array The array to sum
+ * @returns {number} The sum of the values in the array
+ */
+const sumArray = array => array.reduce((sum, value) => sum + value);
+
+data.forEach((value, index) => {
+	const values = [value];
+
+	while (sumArray(values) < invalidNumber) {
+		values.push(data[++index]);
+	}
+
+	if (sumArray(values) === invalidNumber && values.length > 1) {
+		const encryptionWeakness = values.sort()[0] + values.sort().reverse()[0];
+
+		console.log(encryptionWeakness);
+	}
+});
