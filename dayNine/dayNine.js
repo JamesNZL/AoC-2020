@@ -31,7 +31,7 @@ data.forEach((value, index) => {
 	if (sumArray(values) === invalidNumber && values.length > 1) {
 		const sortedValues = values.sort((valueOne, valueTwo) => valueOne - valueTwo);
 
-		const encryptionWeakness = sortedValues[0] + sortedValues.reverse()[0];
+		const encryptionWeakness = sortedValues[0] + [...sortedValues].reverse()[0];
 
 		console.log(encryptionWeakness);
 	}
