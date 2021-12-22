@@ -9,29 +9,23 @@ const OUTLET_JOLTAGE = 0;
 
 /** @type {number[]} */
 const adapterJoltages = readInput('dayTen/', 'NUMBER')
-	.sort((joltageOne, joltageTwo) => joltageOne - joltageTwo);
+	.sort((joltageOne, joltageTwo) => joltageTwo - joltageOne);
 
-const highestAdapterJoltage = [...adapterJoltages].reverse()[0];
+const deviceJoltage = adapterJoltages[0] + TOLERANCES.HIGHER;
 
-const deviceJoltage = highestAdapterJoltage + TOLERANCES.HIGHER;
+adapterJoltages.unshift(deviceJoltage);
+adapterJoltages.push(OUTLET_JOLTAGE);
 
-/**
- * Calculate all the possible next steps for each current arrangement in the \<number[]>
- * @param {number[]} arrangements The array of arrangements
- * @returns {number[]} The array of arrangements with all the possible next steps added
- */
-const calculateNextStep = arrangements => {
-	return arrangements.flatMap(arrangementJoltage => {
-		const compatibleJoltages = adapterJoltages.filter(joltage => TOLERANCES.LOWER.includes(joltage - arrangementJoltage));
-		if (compatibleJoltages.length) return compatibleJoltages.map(joltage => joltage);
-		else return arrangementJoltage;
-	});
-};
+// Use lookup object to memoise all possible following arrangements from each joltage value
+const arrangementsFromJoltage = {};
 
-let arrangementJoltages = [OUTLET_JOLTAGE];
+// Iterate through each adapter joltage in descending order and use the memoised values
+// to calculate the number of possible arrangements after each joltage value
+adapterJoltages.forEach(joltage => {
+	// Filter the list of adapter joltages for the adapters that can be directly attached to the current adapter
+	arrangementsFromJoltage[joltage] = adapterJoltages.filter(adapterJoltage => TOLERANCES.LOWER.includes(adapterJoltage - joltage))
+		// Reduce the number[] of possible next adapters to the sum of their possible arrangements
+		.reduce((arrangements, nextJoltage) => arrangements + (arrangementsFromJoltage[nextJoltage] || 1), 0);
+});
 
-while (arrangementJoltages.some(joltage => joltage !== highestAdapterJoltage)) {
-	arrangementJoltages = calculateNextStep(arrangementJoltages);
-}
-
-console.log(arrangementJoltages.length);
+console.log(arrangementsFromJoltage[OUTLET_JOLTAGE]);
