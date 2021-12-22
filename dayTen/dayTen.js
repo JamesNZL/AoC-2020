@@ -11,17 +11,38 @@ const OUTLET_JOLTAGE = 0;
 const adapterJoltages = readInput('dayTen/', 'NUMBER')
 	.sort((joltageOne, joltageTwo) => joltageOne - joltageTwo);
 
-const deviceJoltage = [...adapterJoltages].reverse()[0] + TOLERANCES.HIGHER;
+const highestAdapterJoltage = [...adapterJoltages].reverse()[0];
 
-const differences = Object.fromEntries(TOLERANCES.LOWER.map(joltage => [joltage, 0]));
+const deviceJoltage = highestAdapterJoltage + TOLERANCES.HIGHER;
 
-let [currentJoltage, targetJoltage] = [OUTLET_JOLTAGE, deviceJoltage];
+/**
+ * Extract the highest joltage value from a specified arrangement string
+ * @param {string} arrangement The arrangement string, in the form `X, Y, Z, `
+ * @returns {number} The number value of the highest joltage
+ */
+const highestJoltage = arrangement => Number(arrangement.match(/\(?(\d+)\)?, $/)[1]);
 
-adapterJoltages.forEach(joltage => {
-	differences[joltage - currentJoltage]++;
-	currentJoltage = joltage;
-});
+/**
+ * Calculate all the possible next steps for each current arrangement in the \<string[]>
+ * @param {string[]} _arrangements The array of arrangements
+ * @returns {string[]} The array of arrangements with all the possible next steps added
+ */
+const calculateNextStep = _arrangements => {
+	return _arrangements.flatMap(arrangement => {
+		const compatibleJoltages = adapterJoltages.filter(joltage => TOLERANCES.LOWER.includes(joltage - highestJoltage(arrangement)));
+		if (compatibleJoltages.length) return compatibleJoltages.map(joltage => arrangement + `${joltage}, `);
+		else return arrangement;
+	});
+};
 
-differences[deviceJoltage - currentJoltage]++;
+let arrangements = [`(${OUTLET_JOLTAGE}), `];
 
-console.log(differences['1'] * differences['3']);
+while (arrangements.some(arrangement => highestJoltage(arrangement) !== highestAdapterJoltage)) {
+	arrangements = calculateNextStep(arrangements);
+}
+
+// Add device joltage to the end of each arrangement string
+arrangements = arrangements
+	.map(arrangement => arrangement + `(${deviceJoltage})`);
+
+console.log(arrangements.length);
