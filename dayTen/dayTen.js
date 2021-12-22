@@ -16,33 +16,22 @@ const highestAdapterJoltage = [...adapterJoltages].reverse()[0];
 const deviceJoltage = highestAdapterJoltage + TOLERANCES.HIGHER;
 
 /**
- * Extract the highest joltage value from a specified arrangement string
- * @param {string} arrangement The arrangement string, in the form `X, Y, Z, `
- * @returns {number} The number value of the highest joltage
+ * Calculate all the possible next steps for each current arrangement in the \<number[]>
+ * @param {number[]} arrangements The array of arrangements
+ * @returns {number[]} The array of arrangements with all the possible next steps added
  */
-const highestJoltage = arrangement => Number(arrangement.match(/\(?(\d+)\)?, $/)[1]);
-
-/**
- * Calculate all the possible next steps for each current arrangement in the \<string[]>
- * @param {string[]} _arrangements The array of arrangements
- * @returns {string[]} The array of arrangements with all the possible next steps added
- */
-const calculateNextStep = _arrangements => {
-	return _arrangements.flatMap(arrangement => {
-		const compatibleJoltages = adapterJoltages.filter(joltage => TOLERANCES.LOWER.includes(joltage - highestJoltage(arrangement)));
-		if (compatibleJoltages.length) return compatibleJoltages.map(joltage => arrangement + `${joltage}, `);
-		else return arrangement;
+const calculateNextStep = arrangements => {
+	return arrangements.flatMap(arrangementJoltage => {
+		const compatibleJoltages = adapterJoltages.filter(joltage => TOLERANCES.LOWER.includes(joltage - arrangementJoltage));
+		if (compatibleJoltages.length) return compatibleJoltages.map(joltage => joltage);
+		else return arrangementJoltage;
 	});
 };
 
-let arrangements = [`(${OUTLET_JOLTAGE}), `];
+let arrangementJoltages = [OUTLET_JOLTAGE];
 
-while (arrangements.some(arrangement => highestJoltage(arrangement) !== highestAdapterJoltage)) {
-	arrangements = calculateNextStep(arrangements);
+while (arrangementJoltages.some(joltage => joltage !== highestAdapterJoltage)) {
+	arrangementJoltages = calculateNextStep(arrangementJoltages);
 }
 
-// Add device joltage to the end of each arrangement string
-arrangements = arrangements
-	.map(arrangement => arrangement + `(${deviceJoltage})`);
-
-console.log(arrangements.length);
+console.log(arrangementJoltages.length);
