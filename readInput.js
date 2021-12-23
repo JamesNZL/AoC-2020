@@ -16,5 +16,5 @@ module.exports = (folder, type, isGrouped = false) => {
 			? input.split('\n\n')
 			: input.split('\n')
 		: input.split('\n')
-			.map(string => Number(string));
+			.map(Number);
 };
