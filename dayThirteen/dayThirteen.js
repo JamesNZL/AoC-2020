@@ -3,15 +3,16 @@ const readInput = require('../readInput');
 /** @type {string[]} */
 const input = readInput('dayThirteen/', 'STRING');
 
-const TIMESTAMP = Number(input[0]);
+/** @type {{busId: number, departureDelay: number}[]} */
 const BUS_IDS = input[1].split(',')
-	.filter(busId => busId !== 'x')
-	.map(Number);
+	.map((busId, index) => { return { busId: Number(busId), departureDelay: index }; })
+	.filter(({ busId }) => !Number.isNaN(busId));
 
-const waitTimes = BUS_IDS.map(busId => {
-	return [busId, (Math.ceil(TIMESTAMP / busId) * busId) - TIMESTAMP];
-});
+const longestDelayedBus = [...BUS_IDS].sort(({ busId:busIdOne }, { busId:busIdTwo }) => busIdTwo - busIdOne)[0];
+let timestamp = longestDelayedBus.busId - longestDelayedBus.departureDelay;
 
-const earliestBus = waitTimes.sort(([_, timeOne], [__, timeTwo]) => timeOne - timeTwo)[0];
+while (!BUS_IDS.every(({ busId, departureDelay }) => (timestamp + departureDelay) % busId === 0)) {
+	timestamp += longestDelayedBus.busId;
+}
 
-console.log(earliestBus[0] * earliestBus[1]);
+console.log(timestamp);
